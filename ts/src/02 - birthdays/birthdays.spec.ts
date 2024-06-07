@@ -26,6 +26,7 @@ describe("birthdays", function () {
     });
 
     it('should return all the birthdays of a given date', () => {
+        // ARRANGE
         const firstOfJanuary = new Date(2015, 0, 1);
         const secondOfJanuary = new Date(2015, 0, 2);
 
@@ -34,7 +35,10 @@ describe("birthdays", function () {
         notebook.addBirthday('Bob', secondOfJanuary);
         notebook.addBirthday('Carol', secondOfJanuary);
 
+        // ACT
         const result = notebook.getBirthdays(secondOfJanuary);
+
+        // ASSERT
         expect(result).toHaveLength(2);
 
         // Solution 1 ==> WHITE BOX ==> We assume the order
