@@ -3,7 +3,7 @@
 namespace kata\external;
 
 
-class ConversionRateApi
+class ConversionRateApi implements IConversionRateApi
 {
 
     /**

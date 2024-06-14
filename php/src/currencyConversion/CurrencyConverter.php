@@ -3,14 +3,15 @@
 namespace kata;
 
 use kata\external\ConversionRateApi;
+use kata\external\IConversionRateApi;
 use kata\model\Currency;
 use kata\model\Money;
 
 class CurrencyConverter
 {
-    private ConversionRateApi $conversionRateApi;
+    private IConversionRateApi $conversionRateApi;
 
-    public function __construct(ConversionRateApi $api)
+    public function __construct(IConversionRateApi $api)
     {
         $this->conversionRateApi = $api;
     }

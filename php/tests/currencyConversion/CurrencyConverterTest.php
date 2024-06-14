@@ -4,9 +4,26 @@ namespace currencyConversion;
 
 use kata\CurrencyConverter;
 use kata\external\ConversionRateApi;
+use kata\external\CurrencyIsoCode;
+use kata\external\IConversionRateApi;
 use kata\model\Currency;
 use kata\model\Money;
 use PHPUnit\Framework\TestCase;
+
+class FakeConversionRateApi implements IConversionRateApi
+{
+    private float $rate = 1;
+
+    public function getRate(CurrencyIsoCode $source, CurrencyIsoCode $target): float
+    {
+        return $this->rate;
+    }
+
+    public function setRate(float $param)
+    {
+        $this->rate = $param;
+    }
+}
 
 class CurrencyConverterTest extends TestCase
 {
@@ -77,6 +94,19 @@ class CurrencyConverterTest extends TestCase
         $result = $converter->sum(Currency::Euro, [new Money(1, Currency::Dollar), new Money(2, Currency::Dollar)]);
 
         $this->assertEquals(3 * 1.5, $result->amount);
+        $this->assertEquals(Currency::Euro, $result->currency);
+    }
+
+    public function testShouldConvertOneCurrency_withFake(): void
+    {
+        $fakeApi = new FakeConversionRateApi();
+        //$fakeApi->withRate(CurrencyIsoCode::USD, CurrencyIsoCode::EUR, 1.5);
+        $fakeApi->setRate(1.5);
+        $converter = new CurrencyConverter($fakeApi);
+
+        $result = $converter->sum(Currency::Euro, [new Money(1, Currency::Dollar)]);
+
+        $this->assertEquals(1.5, $result->amount);
         $this->assertEquals(Currency::Euro, $result->currency);
     }
 
