@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ReceiptPrinter with one product should print the correct receipt (with snapshot) 1`] = `
+"apples                              5.00
+  2.50 * 2.000
+
+Total:                              5.00"
+`;
