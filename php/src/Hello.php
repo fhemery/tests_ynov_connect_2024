@@ -6,6 +6,6 @@ class Hello
 {
 
     function print(): string {
-        return "Hi!";
+        return "Hello world!";
     }
 }
