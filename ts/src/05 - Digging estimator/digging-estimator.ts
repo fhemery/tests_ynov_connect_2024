@@ -22,9 +22,31 @@ export class TeamComposition {
   total = 0;
 }
 
+export interface DiggingRateProvider {
+  get(rockType: string): number[];
+}
+
+export class VinDiggingRateProvider implements DiggingRateProvider {
+    get(rockType: string): number[] {
+      // For example, for granite it returns [0, 3, 5.5, 7]
+      // if you put 0 dwarf, you dig 0m/d/team
+      // if you put 1 dwarf, you dig 3m/d/team
+      // 2 dwarves = 5.5m/d/team
+      // so a day team on 2 miners and a night team of 1 miner dig 8.5m/d
+      const url = `dtp://research.vin.co/digging-rate/${rockType}`;
+      console.log(`Tried to fetch ${url}`);
+      throw new Error('Does not work in test mode');
+    }
+}
+
 export class DiggingEstimator {
+  diggingRateProvider: DiggingRateProvider;
+  constructor(_diggingRateProvider?: DiggingRateProvider) {
+    this.diggingRateProvider = _diggingRateProvider || new VinDiggingRateProvider();
+  }
+
   tunnel(length: number, days: number, rockType: string): TeamComposition {
-    const digPerRotation = this.get(rockType);
+    const digPerRotation = this.diggingRateProvider.get(rockType);
     const maxDigPerRotation = digPerRotation[digPerRotation.length - 1];
     const maxDigPerDay = 2 * maxDigPerRotation;
 
@@ -95,17 +117,5 @@ export class DiggingEstimator {
     composition.total = dt.miners + dt.washers + dt.healers + dt.smithies + dt.innKeepers +
       nt.miners + nt.washers +  nt.healers  + nt.smithies  + nt.innKeepers + nt.guards + nt.guardManagers + nt.lighters;
     return composition;
-  }
-
-  protected get(rockType: string) : number[] {
-    // For example, for granite it returns [0, 3, 5.5, 7]
-    // if you put 0 dwarf, you dig 0m/d/team
-    // if you put 1 dwarf, you dig 3m/d/team
-    // 2 dwarves = 5.5m/d/team
-    // so a day team on 2 miners and a night team of 1 miner dig 8.5m/d
-    const url = `dtp://research.vin.co/digging-rate/${rockType}`;
-    console.log(`Tried to fetch ${url}`);
-    throw new Error('Does not work in test mode');
-
   }
 }
