@@ -1,71 +1,52 @@
-const FRAME_SYMBOL = '/';
+import {BowlingGame} from "./bowling-game";
 
-const SPARE_BASE_SCORE = 10;
+describe('Bowling kata', () => {
 
-class Frame {
-    // Frame needs next frame to compute spare
-    // and potentially the one after for a strike
-    constructor(private frame: string) {
-    }
+    it('should return 0 when all frames are misses', () => {
+        const game = "-- -- -- -- -- -- -- -- -- --";
+        const bowling = new BowlingGame(game);
 
-    getScore(): number {
-        if (this.isSpare()) {
-            return SPARE_BASE_SCORE;
-        }
-        let result = 0;
-        for (let i =0; i< this.frame.length; i++) {
-            const pins = parseInt(this.frame[i]);
-            result += isNaN(pins) ? 0 : pins;
-        }
-        return result;
-    }
-
-    private isSpare() {
-        return this.frame[1] === FRAME_SYMBOL;
-    }
-}
-
-class BowlingGame {
-    private frames: Frame[];
-    constructor(private game: string) {
-        this.frames = game.split(" ").map(f => new Frame(f));
-    }
-
-    getScore() : number {
-        return this.frames.map(f => f.getScore()).reduce((acc, curr) => acc + curr, 0);
-    }
-}
-
-describe('Bowling Game', () => {
-    it('should return 0 if there are only misses', () => {
-        const game = new BowlingGame('-- -- -- -- -- -- -- -- -- --');
-
-        const result = game.getScore();
-
-        expect(result).toBe(0);
+        expect(bowling.getScore()).toBe(0);
     });
 
-    it('should return the number of pins that are down if all are not down', () => {
-        const game = new BowlingGame('-- 2- -3 -- -- -- -- -- -- --');
+    it('should return number of pins down when one ball hits', () => {
+        const game = "-2 -- -- -- -- -- -- -- -- --";
+        const bowling = new BowlingGame(game);
 
-        const result = game.getScore();
-
-        expect(result).toBe(5);
+        expect(bowling.getScore()).toBe(2);
     });
 
-    it('should return 10 for a spare', () => {
-        const game = new BowlingGame('-- 2/ -3 -- -- -- -- -- -- --');
+    it('should sum the throws for each frame', () => {
+        const game = "32 -- 6- -- -- -- -- -- -- --";
+        const bowling = new BowlingGame(game);
 
-        const result = game.getScore();
+        expect(bowling.getScore()).toBe(11);
+    });
 
-        expect(result).toBe(10 + 3);
+    it('should count 10 as a base for a strike', () => {
+        const game = "-- -- -- X -- -- -- -- -- --";
+        const bowling = new BowlingGame(game);
+
+        expect(bowling.getScore()).toBe(10);
     })
 
-    xit('should double the next throw for a spare', () => {
-        const game = new BowlingGame('-- 2/ 3- -- -- -- -- -- -- --');
+    it('should add the next two throws to frame score when current frame is a strike', () => {
+        const game = "-- -- -- X 11 -- -- -- -- --";
+        const bowling = new BowlingGame(game);
 
-        const result = game.getScore();
-
-        expect(result).toBe(13 + 3);
+        expect(bowling.getScore()).toBe(12 + 2);
     })
+
+    it('should add the next two throws to frame score when current frame is a strike, case of a strike next', () => {
+        const game = "-- -- -- X X 12 -- -- -- --";
+        const bowling = new BowlingGame(game);
+
+        expect(bowling.getScore()).toBe(21 + 13 + 3);
+    });
+
+    // Manque :
+    // - Spares
+    // - Strike -> Spare
+    // - End game
+
 });
