@@ -7,8 +7,30 @@ use kata\TripServiceKata\User\User;
 use kata\TripServiceKata\User\UserSession;
 use kata\TripServiceKata\Trip\TripDAO;
 
+interface TripInterface {
+    public function getTripsByUser(User $user): array;
+
+}
+
+class DefaultTripService implements TripInterface {
+    public function getTripsByUser(User $user): array
+    {
+        return (new TripDAO)->findTripsByUser($user);
+    }
+}
+
 class TripService
 {
+    private TripInterface $tripService;
+
+    public function __construct(?TripInterface $tripService = null)
+    {
+        if ($tripService == null) {
+            $this->tripService = new DefaultTripService();
+        } else {
+            $this->tripService = $tripService;
+        }
+    }
     /**
      * @return Trip[]
      * @throws UserNotLoggedInException
@@ -26,7 +48,7 @@ class TripService
                 }
             }
             if ($isFriend) {
-                $tripList = TripDAO::findTripsByUser($user);
+                $tripList = $this->tripService->getTripsByUser($user);
             }
             return $tripList;
         } else {
